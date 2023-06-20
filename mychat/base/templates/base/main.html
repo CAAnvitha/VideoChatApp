@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+   
+<head>
+    <title>MyChat</title>
+    <link rel='stylesheet' type='text/css' media='screen' href="{% static 'styles/main.css' %}">
+    <script src="/static/js/jquery-3.2.1.min.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <meta name= 'viewport' content='width-device-width, initial-scale-1 maximum-scale=1, minimum-scale=1'>
+    <meta charset='utf-8'>
+    <meta http-equiv= 'X-UA-Compatible' content= 'IE=edge'>
+</head>
+<body> <h1>Main template</h1>
+    {% block content %}
+    {% endblock content %}
+
+</html>
