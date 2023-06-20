@@ -1,4 +1,20 @@
 from django.shortcuts import render
+from django.http import JsonResponse
+from agora_token_builder import RtcTokenBuilder
+import random
+import time
+
+def getToken(request):
+    appId= 'fb18a820a7f8457498d4895df9b31a69'
+    appCertificate = 'cf98ebf7f2a8415eb45408dea12f8455'
+    channelName = request.GET.get('channel')
+    uid = random.randint(1, 230)
+    expirationTimeInSeconds = 3600*24
+    currentTimestamp =time.time()
+    privilegeExpiredTs = currentTimestamp + expirationTimeInSeconds
+    role = 1
+    token = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, uid, role, privilegeExpiredTs)
+    return JsonResponse({'token':token,"uid":uid},safe=False)
 
 def lobby (request):
     return render(request,'base/lobby.html')

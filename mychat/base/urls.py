@@ -6,5 +6,7 @@ from . import views
 urlpatterns = [
     path('',views.lobby),
     path('room/',views.room),
+    path('getToken/',views.getToken),
+
    
 ]

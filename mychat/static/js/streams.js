@@ -1,32 +1,104 @@
 const APP_ID = "fb18a820a7f8457498d4895df9b31a69"
-const CHANNEL = "mainChannel"
-const TOKEN = "007eJxTYHhpryXD+6/r2IxIhfM8swtffVD/ZsT5RbjuyY9HOzrdk4QVGNKSDC0SLYwMEs3TLExMzU0sLVJMLCxNU9Isk4wNE80s332bkNIQyMiQPPMwMyMDBIL43Ay5iZl5zhmJeXmpOQwMAIKrI50="
+const CHANNEL = "mynewchannel"
+const TOKEN = "006fb18a820a7f8457498d4895df9b31a69IADGv29EGXHj0tHpVLq47zLHMMEjfoEejED36gcXV6XBAmf+nQgUergdIgAOqwgEgVyTZAQAAQCBXJNkAgCBXJNkAwCBXJNkBACBXJNk"
 
 console.log("Stream js is connected")
 
 
 
-let UID;
+let UID =6;
 const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
 let localTracks = []
 let remoteUsers = {}
 
+
+
 let joinAndDisplayLocalStream = async() =>{
 
-   UID =  await client.join(APP_ID,CHANNEL,TOKEN,null)
+   client.on('user-published',handleUserJoined)
+   client.on('user-left', handleUserLeft)
+   // client.on('user-published',()=>{
+   //    console.log("egreuygtiuerteirutiur----")
+   // })
+    await client.join(APP_ID,CHANNEL,TOKEN,UID)
    console.log("-------")
    localTracks = await AgoraRTC.createMicrophoneAndCameraTracks()
    console.log("LocalTracks",localTracks)
 
    let player = `<div class="video-container" id="user-container-${UID}">
-   <div class="username-wrapper"> <span class="user-name">My Name is Annie</span></div>
+   <div class="username-wrapper"> <span class="user-name">My Name is ${UID}</span></div>
    <div class="video-player" id="user-${UID}"></div>
 </div>`
    document.getElementById('video-streams').insertAdjacentHTML('beforeend',player)
-  
   localTracks[1].play(`user-${UID}`)
-await client.publish(localTracks[0],localTracks[1])
-
-
+  await client.publish(localTracks[1]) 
+  await client.publish(localTracks[0])
 }
+
+
+let handleUserJoined = async(user,mediaType) =>{
+   console.log("----New User Joined Aniieeeee---------")
+   remoteUsers[user.uid] =user
+   await client.subscribe(user,mediaType)
+   console.log("---Autopilot heard me",user,mediaType)
+   if(mediaType === "video"){
+      console.log("----------Annie was here---------")
+      // checkif user is alreay present
+      let player = document.getElementById(`user-container-${user.uid}`)
+      if(player!=null){
+         player.remove()
+      }
+
+      player = `<div class="video-container" id="user-container-${user.uid}">
+      <div class="username-wrapper"> <span class="user-name">My Name is ${user.uid}e</span></div>
+      <div class="video-player" id="user-${user.uid}"></div>
+   </div>`
+   console.log("Annie was here")
+      document.getElementById('video-streams').insertAdjacentHTML('beforeend', player)
+      user.videoTrack.play(`user-${user.uid}`)
+   }
+
+   if(mediaType === "audio"){
+      user.audioTrack.play()
+   }
+}
+let handleUserLeft = async (user) => {
+   delete remoteUsers[user.uid]
+   document.getElementById(`user-container-${user.uid}`).remove()
+}
+
+let leaveAndRemoveLocalStream = async() =>{
+   for (let i=0;localTracks.length>i;i++){
+      localTracks[i].stop()
+      localTracks[i].close()
+   }
+   await client.leave()
+   window.open("/","_self")
+}
+
+let toggleCamera = async (e)=>{
+   if(localTracks[1].muted){
+      await localTracks[1].setMuted(false)
+      e.target.style.backgroundColor="#FFF"
+   }
+   else{
+      await localTracks[1].setMuted(true)
+      e.target.style.backgroundColor="rgb(255,80,80,1)"
+   }
+}
+
+let toggleMic = async (e)=>{
+   if(localTracks[0].muted){
+      await localTracks[0].setMuted(false)
+      e.target.style.backgroundColor="#FFF"
+   }
+   else{
+      await localTracks[0].setMuted(true)
+      e.target.style.backgroundColor="rgb(255,80,80,1)"
+   }
+}
+
 joinAndDisplayLocalStream()
+document.getElementById('leave-btn').addEventListener("click",leaveAndRemoveLocalStream)
+document.getElementById('camera-btn').addEventListener("click",toggleCamera)
+document.getElementById('mic-btn').addEventListener("click",toggleMic)
