@@ -26,10 +26,12 @@ let joinAndDisplayLocalStream = async() =>{
       window.open("/",'_self')
    }
    localTracks = await AgoraRTC.createMicrophoneAndCameraTracks()
+
+   let member = await createMember()
    console.log("LocalTracks",localTracks)
 
    let player = `<div class="video-container" id="user-container-${UID}">
-   <div class="username-wrapper"> <span class="user-name">My Name is ${UID}</span></div>
+   <div class="username-wrapper"> <span class="user-name">Name- ${member.name}</span></div>
    <div class="video-player" id="user-${UID}"></div>
 </div>`
    document.getElementById('video-streams').insertAdjacentHTML('beforeend',player)
@@ -51,9 +53,10 @@ let handleUserJoined = async(user,mediaType) =>{
       if(player!=null){
          player.remove()
       }
+      let member = await getMember(user)
 
       player = `<div class="video-container" id="user-container-${user.uid}">
-      <div class="username-wrapper"> <span class="user-name">My Name is ${user.uid}e</span></div>
+      <div class="username-wrapper"> <span class="user-name">${member.name}</span></div>
       <div class="video-player" id="user-${user.uid}"></div>
    </div>`
    console.log("Annie was here")
@@ -100,6 +103,39 @@ let toggleMic = async (e)=>{
       e.target.style.backgroundColor="rgb(255,80,80,1)"
    }
 }
+
+let createMember = async () => {
+   let response = await fetch('/create_member/', {
+       method:'POST',
+       headers: {
+           'Content-Type':'application/json'
+       },
+       body:JSON.stringify({'name':NAME, 'room_name':CHANNEL, 'UID':UID})
+   })
+   let member = await response.json()
+   return member
+}
+
+
+let getMember = async (user) => {
+   let response = await fetch(`/get_member/?UID=${user.uid}&room_name=${CHANNEL}`)
+   let member = await response.json()
+   return member
+}
+
+let deleteMember = async () => {
+   let response = await fetch('/delete_member/', {
+       method:'POST',
+       headers: {
+           'Content-Type':'application/json'
+       },
+       body:JSON.stringify({'name':NAME, 'room_name':CHANNEL, 'UID':UID})
+   })
+   let member = await response.json()
+}
+
+window.addEventListener("beforeunload",deleteMember);
+
 
 joinAndDisplayLocalStream()
 document.getElementById('leave-btn').addEventListener("click",leaveAndRemoveLocalStream)
