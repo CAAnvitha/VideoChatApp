@@ -114,3 +114,65 @@ body{
 #leave-btn{
     background-color: rgb(255, 80, 80, 1);
 }
+
+#welcome-message{
+    text-align:center;
+    margin:20oxf
+}
+#welcome-message h1{
+    font-size: 36px;
+}
+
+#welcome-message p{
+    font-size: 16px;
+}
+
+.form-field{
+    margin:20px
+}
+
+.form-field label{
+    font-size: 16px;
+    line-height: 1.7em;
+}
+
+.form-field input{
+    width: 100%;
+    border: 2px solid rgba(198,202,219,1);
+    border-radius: 5px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.form-field input[type="submit"]{
+    background-color:rgba(75,93,172,1);
+    color: #fff;
+    border: none;
+}
+
+@media screen and (max-width:450px) {
+    #form-container{
+        width: 95%;
+    }
+    #welcome-message h1{
+        font-size: 24px;
+    }
+    
+}
+
+@media screen and (max-width:1650px) {
+    .video-container{
+        flex-basis: 300px;
+         min-height: 200px;
+    }
+    #welcome-message h1{
+        font-size: 24px;
+    }
+    
+}
+
+
+#room-name-wrapper{
+    text-align: center;
+    font-size: 18px;
+}
